@@ -1,0 +1,12 @@
+{
+    "name": "gawonmi/php-simplemail-receiver",
+    "description": "Simple library to connect to a POP3/IMAP mail server and receive mails (with attachements)",
+    "minimum-stability": "stable",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Nowag",
+            "email": "michaelnowag@gmail.com"
+        }
+    ]
+}
