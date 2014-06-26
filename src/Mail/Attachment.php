@@ -11,7 +11,7 @@
  * @version  SVN: $Id$
  * @link     MailAttachment
  */
-namespace EmailConnector\model\mail;
+namespace SimpleMailReceiver\Mail;
 
 /**
  * Class that represent a file that is attached with the mail

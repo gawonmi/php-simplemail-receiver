@@ -26,11 +26,29 @@ class Receiver
      */
     private $mailer;
 
+    /**
+     * @var Collection
+     */
+    private $config;
+
+    /**
+     * Get a parameter of the config or the entire collection
+     *
+     * @param bool $key The key of the parameter
+     * @return Collection
+     */
     final public function getConfig($key = false)
     {
         return $key ? $this->config[ $key ] : $this->config;
     }
 
+    /**
+     * Set the config parameters
+     *
+     * @param $config
+     * @return $this
+     * @throws \InvalidArgumentException
+     */
     final public function setConfig($config)
     {
         if ($config instanceof Collection) {
@@ -66,8 +84,11 @@ class Receiver
         $factory      = new ProtocolFactory();
         $this->protocol = $factory->create($this->getConfig('protocol'));
         $this->protocol->setMailServer($this->getConfig('host'))
+            //Set the port
             ->setPort($this->getConfig('port'))
+            //Set the main folder to retrieve mails
             ->setFolder($this->getConfig('folder'))
+            //Set Secure Socket Layer to true or false
             ->setSsl($this->getConfig('ssl'));
     }
 
@@ -76,20 +97,13 @@ class Receiver
      */
     public function connect()
     {
-        $this->mailer->connect($this->protocol);
-
-        if ($servertype == 'imap') {
-            if ($port == '') {
-                $port = '143';
-            }
-            $strConnect = '{' . $mailserver . ':' . $port . '/imap/ssl}INBOX';
-        } else {
-            $strConnect = '{' . $mailserver . ':' . $port . '/pop3}INBOX';
-        }
-        $this->server   = $strConnect;
-        $this->username = $username;
-        $this->password = $password;
-        $this->email    = $EmailAddress;
+        //Do the connection
+        $this->mailer = new MailServer(
+            $this->protocol->connect(
+                $this->getConfig('username'),
+                $this->getConfig('password')
+            )
+        );
     }
 
     /**
@@ -114,6 +128,26 @@ class Receiver
     }
 
     /**
+     * Get total number of all emails
+     *
+     * @return int
+     */
+    public function countAllMails()
+    {
+        return $this->mailer->countAllMails();
+    }
+
+    /**
+     * Get total Number of unread emails
+     *
+     * @return int
+     */
+    public function countUnreadMails()
+    {
+        return $this->mailer->countUnreadMails();
+    }
+
+    /**
      * Close the connection
      *
      * @return bool
@@ -122,5 +156,4 @@ class Receiver
     {
         return $this->mailer->close();
     }
-
-} 
+}

@@ -126,12 +126,22 @@ class Mail
      */
     public function search($pattern)
     {
-        //TODO
-        /*
-        if (is_int(strpos($this->body, $pattern)) || $this->mailHeader->search($pattern))
+        // Search in the body
+        foreach ($this->mailHeader as $header)
+        {
+            if (is_int(strpos($header, $pattern)))
+            {
+                return true;
+            }
+        }
+
+        // Search in the body
+        if (is_int(strpos($this->body, $pattern)))
         {
             return true;
         }
+
+        // Search in the attachment
         foreach ($this->attachments as $attach)
         {
             if ($attach->searchFilename($pattern) || $attach->searchContent($pattern))
@@ -139,7 +149,7 @@ class Mail
                 return true;
             }
         }
-        return false;*/
+        return false;
     }
 
     /**
