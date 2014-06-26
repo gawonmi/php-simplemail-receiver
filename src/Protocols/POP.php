@@ -8,11 +8,22 @@
 
 namespace SimpleMailReceiver\Protocol;
 
-class POP implements ProtocolInterface
+use SimpleMailReceiver\Commons\AbstractMailTransport;
+
+class POP extends AbstractMailTransport implements ProtocolInterface
 {
-    function connect($host,$port,$user,$pass,$folder="INBOX",$ssl=false)
+
+    /**
+     * Create the string for connection and connect to the mail Server
+     *
+     * @param string $username
+     * @param string $password
+     * @return resource
+     */
+    function connect($username, $password)
     {
-        $ssl=($ssl==false)?"/novalidate-cert":"";
-        return (imap_open("{"."$host:$port/pop3$ssl"."}$folder",$user,$pass));
+        $this->ssl = (($this->ssl == false) ? "/novalidate-cert" : "");
+        $string = "{" . $this->mailserver . ":" . $this->port . "/pop3" . $this->ssl ."}" . $this->folder;
+        return imap_open($string, $username, $password);
     }
-} 
+}

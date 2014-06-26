@@ -9,7 +9,21 @@
 namespace SimpleMailReceiver\Protocol;
 
 
-class IMAP implements ProtocolInterface {
+use SimpleMailReceiver\Commons\AbstractMailTransport;
 
+class IMAP extends AbstractMailTransport implements ProtocolInterface {
 
-} 
+    /**
+     * Create the string for connection and connect to the mail Server
+     *
+     * @param string $username
+     * @param string $password
+     * @return resource
+     */
+    function connect($username, $password)
+    {
+        $this->ssl = (($this->ssl == false) ? "/novalidate-cert" : "/ssl");
+        $string = "{" . $this->mailserver . ":" . $this->port . "/imap" . $this->ssl ."}" . $this->folder;
+        return imap_open($string, $username, $password);
+    }
+}

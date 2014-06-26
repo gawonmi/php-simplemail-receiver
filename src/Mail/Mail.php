@@ -13,6 +13,7 @@
  */
 namespace SimpleMailReceiver\Mail;
 
+use SimpleMailReceiver\Commons\Collection;
 /**
  * Class to handle the content of a eMail
  *
@@ -29,7 +30,7 @@ class Mail
     /**
      * The header of the mail
      *
-     * @var MailHeader
+     * @var Collection
      */
     private $mailHeader;
 
@@ -43,23 +44,14 @@ class Mail
     /**
      * The files that has been attached to this mail
      *
-     * @var array of MailAttachment
+     * @var Collection
      */
     private $attachments;
 
     /**
-     * Constructor of the class
-     *
-     * @param unknown $header      The header
-     * @param unknown $body        The body
-     * @param unknown $attachments The attachments
-     */
-    public function __construct();
-
-    /**
      * Get the mail header
      *
-     * @return \EmailConnector\model\mail\MailHeader
+     * @return unknown
      */
     public function getMailHeader()
     {
@@ -69,11 +61,11 @@ class Mail
     /**
      * Set the mail header
      *
-     * @param MailHeader $mailHeader The header
+     * @param Collection $mailHeader The header
      *
      * @return \EmailConnector\model\mail\Mail
      */
-    public function setMailHeader(MailHeader $mailHeader)
+    public function setMailHeader($mailHeader)
     {
         $this->mailHeader = $mailHeader;
         return $this;
@@ -94,7 +86,7 @@ class Mail
      *
      * @param string $body The body
      *
-     * @return \EmailConnector\model\mail\Mail
+     * @return
      */
     public function setBody($body)
     {
@@ -115,11 +107,11 @@ class Mail
     /**
      * Set the attachments
      *
-     * @param array $attachments The attachments
+     * @param Collection $attachments The attachments
      *
-     * @return \EmailConnector\model\mail\Mail
+     * @return
      */
-    public function setAttachments(array $attachments)
+    public function setAttachments($attachments)
     {
         $this->attachments = $attachments;
         return $this;
@@ -134,6 +126,8 @@ class Mail
      */
     public function search($pattern)
     {
+        //TODO
+        /*
         if (is_int(strpos($this->body, $pattern)) || $this->mailHeader->search($pattern))
         {
             return true;
@@ -145,7 +139,7 @@ class Mail
                 return true;
             }
         }
-        return false;
+        return false;*/
     }
 
     /**

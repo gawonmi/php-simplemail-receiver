@@ -11,14 +11,12 @@ namespace SimpleMailReceiver\Protocol;
 
 interface ProtocolInterface {
 
-    public function connect();
-    public function close();
-    public function delete($id);
-
     /**
-     * @param $id
+     * Create the string for connection and connect to the mail Server
      *
-     * @return Mail
+     * @param $username
+     * @param $password
+     * @return resource
      */
-    public function get($id);
+    public function connect($username, $password);
 }

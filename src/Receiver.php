@@ -10,9 +10,21 @@ namespace SimpleMailReceiver;
 
 use SimpleMailReceiver\Commons\Collection;
 use SimpleMailReceiver\Protocol\ProtocolFactory;
+use SimpleMailReceiver\Protocol\ProtocolInterface;
+use SimpleMailReceiver\Commons\MailServer;
 
 class Receiver
 {
+
+    /**
+     * @var ProtocolInterface
+     */
+    private $protocol;
+
+    /**
+     * @var MailServer
+     */
+    private $mailer;
 
     final public function getConfig($key = false)
     {
@@ -35,7 +47,8 @@ class Receiver
     /**
      * Constructor
      *
-     * @param array|Collection $configs The config of the app
+     * @param array $config
+     * @internal param array|\SimpleMailReceiver\Commons\Collection $configs The config of the app
      */
     public function __construct($config = null)
     {
@@ -51,12 +64,19 @@ class Receiver
         }
         $this->setConfig($config ? : new Collection());
         $factory      = new ProtocolFactory();
-        $this->mailer = $factory->createVehicle($this->getConfig('protocol'));
+        $this->protocol = $factory->create($this->getConfig('protocol'));
+        $this->protocol->setMailServer($this->getConfig('host'))
+            ->setPort($this->getConfig('port'))
+            ->setFolder($this->getConfig('folder'))
+            ->setSsl($this->getConfig('ssl'));
     }
 
+    /**
+     * Connect to the mail Server
+     */
     public function connect()
     {
-        $this->mailer->connect();
+        $this->mailer->connect($this->protocol);
 
         if ($servertype == 'imap') {
             if ($port == '') {
@@ -72,9 +92,35 @@ class Receiver
         $this->email    = $EmailAddress;
     }
 
+    /**
+     * Get all the mails in the inbox
+     *
+     * @return Collection
+     */
+    public function getMails()
+    {
+        return $this->mailer->retriveAllMails();
+    }
+
+    /**
+     * Get the mail by id in the list of mails
+     *
+     * @param integer $id The id of the mail
+     * @return null|Mail\Mail
+     */
+    public function getMail($id)
+    {
+        return $this->mailer->retriveMail($id);
+    }
+
+    /**
+     * Close the connection
+     *
+     * @return bool
+     */
     public function close()
     {
-        $this->mailer->close();
+        return $this->mailer->close();
     }
 
 } 

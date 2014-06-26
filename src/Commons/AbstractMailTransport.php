@@ -4,19 +4,19 @@
  * PHP version 5
  *
  * @category Mail
- * @package  EmailConnector\mailTransport
+ * @package  SimpleMailReceiver\Commons
  * @author   jlcardosa <joseluis.cardosamanzano@maviance.com>
  * @license  maviance GmbH 2014
  * @version  SVN: $Id$
  * @link     AbstractMailTransport
  */
-namespace EmailConnector\mailTransport;
+namespace SimpleMailReceiver\Commons;
 
 /**
  * Define kind of mail transport
  *
  * @category Mail
- * @package  EmailConnector\mailTransport
+ * @package  SimpleMailReceiver\Commons
  * @author   jlcardosa <joseluis.cardosamanzano@maviance.com>
  * @license  maviance GmbH 2014
  * @version  Release: 1.01
@@ -34,13 +34,6 @@ abstract class AbstractMailTransport
     protected $mailserver;
 
     /**
-     * The protocol used
-     *
-     * @var string
-     */
-    protected $servertype;
-
-    /**
      * The number of the port
      *
      * @var integer
@@ -48,15 +41,23 @@ abstract class AbstractMailTransport
     protected $port;
 
     /**
-     * Constructor of the class
+     * The folder to access
      *
-     * @param string  $mailserver The mail server
-     * @param integer $port       The port
+     * @var string
      */
-    public function __construct($mailserver, $port)
+    protected $folder;
+
+    /**
+     * SSL activated or not
+     *
+     * @var bool
+     */
+    protected $ssl;
+
+    public function __constructor()
     {
-        $this->setMailserver($mailserver);
-        $this->setPort($port);
+        $this->folder = "INBOX";
+        $this->ssl = false;
     }
 
     /**
@@ -74,36 +75,11 @@ abstract class AbstractMailTransport
      *
      * @param string $mailserver The mail server
      *
-     * @return \EmailConnector\mailTransport\AbstractMailTransport
+     * @return AbstractMailTransport
      */
     public function setMailserver($mailserver)
     {
         $this->mailserver = $mailserver;
-
-        return $this;
-    }
-
-    /**
-     * Get the type of server
-     *
-     * @return the string
-     */
-    public function getServertype()
-    {
-        return $this->servertype;
-    }
-
-    /**
-     * Set the type of server
-     *
-     * @param string $servertype The server type
-     *
-     * @return \EmailConnector\mailTransport\AbstractMailTransport
-     */
-    public function setServertype($servertype)
-    {
-        $this->servertype = $servertype;
-
         return $this;
     }
 
@@ -122,7 +98,8 @@ abstract class AbstractMailTransport
      *
      * @param int $port the port
      *
-     * @return \EmailConnector\mailTransport\AbstractMailTransport
+     * @throws \InvalidArgumentException
+     * @return AbstractMailTransport
      */
     public function setPort($port)
     {
@@ -130,7 +107,49 @@ abstract class AbstractMailTransport
             throw new \InvalidArgumentException("Port must be a number: " . $port);
         }
         $this->port = $port;
-
         return $this;
+    }
+
+
+    /**
+     * Set the folder
+     *
+     * @param string $folder
+     * @return AbstractMailTransport
+     */
+    public function setFolder($folder)
+    {
+        $this->folder = $folder;
+        return $this;
+    }
+
+    /**
+     * Get the folder
+     *
+     * @return string
+     */
+    public function getFolder()
+    {
+        return $this->folder;
+    }
+
+    /**
+     * Set SSL true or false
+     *
+     * @param boolean $ssl
+     * @return $this
+     */
+    public function setSsl($ssl)
+    {
+        $this->ssl = $ssl;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function IsSsl()
+    {
+        return $this->ssl;
     }
 }

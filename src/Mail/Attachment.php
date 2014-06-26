@@ -24,7 +24,7 @@ namespace EmailConnector\model\mail;
  * @link     MailAttachment
  *
  */
-class MailAttachment
+class Attachment
 {
     /**
      * Name of the file
