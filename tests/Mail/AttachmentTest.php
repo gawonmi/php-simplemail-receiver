@@ -2,7 +2,7 @@
 
 require_once 'PHPUnit/Autoload.php';
 
-use SimpleMailReceiver\Mail\Attachment
+use SimpleMailReceiver\Mail\Attachment;
 
 class AttachmentTest extends \PHPUnit_Framework_TestCase
 {
