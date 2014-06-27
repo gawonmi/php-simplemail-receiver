@@ -15,6 +15,7 @@ class MailServerTest extends \PHPUnit_Framework_TestCase
     {
         $imap_res = imap_open('{imap.gmail.com:993/imap/ssl}INBOX','username','password');
         $this->mailer = new Mailserver($imap_res);
+        $thrower->Stop();
     }
 
     public function testGetSizeMailBox()
@@ -30,13 +31,13 @@ class MailServerTest extends \PHPUnit_Framework_TestCase
 
     public function testGetHeader()
     {
-        $header = $this->mailer->retriveHeaders(4);
-        $this->assertEquals($header->getItem('subject'), 'Test');
+        $header = $this->mailer->retrieveHeaders(4);
+        $this->assertEquals($header->getSubject(), 'Test');
     }
 
     public function testGetBody()
     {
-        $body = $this->mailer->retriveBody(4);
+        $body = $this->mailer->retrieveBody(4);
         $this->assertContains('Body Test', $body);
     }
 
@@ -50,9 +51,9 @@ class MailServerTest extends \PHPUnit_Framework_TestCase
 
     public function testGetMail()
     {
-        $mail = $this->mailer->retriveMail(4);
+        $mail = $this->mailer->retrieveMail(4);
         $header = $mail->getMailHeader();
-        $this->assertEquals($header->getItem('subject'), 'Test');
+        $this->assertEquals($header->getSubject(), 'Test');
         $this->assertContains('Body Test', $mail->getBody());
         $attachments = $mail->getAttachments();
         $this->assertEquals($attachments->getItem(0)->getName(), 'test1');

@@ -30,7 +30,7 @@ class Mail
     /**
      * The header of the mail
      *
-     * @var Collection
+     * @var Headers
      */
     private $mailHeader;
 
@@ -51,7 +51,7 @@ class Mail
     /**
      * Get the mail header
      *
-     * @return Collection
+     * @return Headers
      */
     public function getMailHeader()
     {
@@ -61,9 +61,9 @@ class Mail
     /**
      * Set the mail header
      *
-     * @param Collection $mailHeader The header
+     * @param Headers $mailHeader The header
      *
-     * @return \EmailConnector\model\mail\Mail
+     * @return $this
      */
     public function setMailHeader($mailHeader)
     {
@@ -86,7 +86,7 @@ class Mail
      *
      * @param string $body The body
      *
-     * @return
+     * @return $this
      */
     public function setBody($body)
     {
@@ -126,17 +126,8 @@ class Mail
      */
     public function search($pattern)
     {
-        // Search in the body
-        foreach ($this->mailHeader as $header)
-        {
-            if (is_int(strpos($header, $pattern)))
-            {
-                return true;
-            }
-        }
-
-        // Search in the body
-        if (is_int(strpos($this->body, $pattern)))
+        // Search in the body and in the headers
+        if (is_int(strpos($this->body, $pattern)) || $this->mailHeader->search($pattern))
         {
             return true;
         }
@@ -155,7 +146,7 @@ class Mail
     /**
      * Convert to array the object
      *
-     * @return multitype:\EmailConnector\model\mail\MailHeader string multitype:
+     * @return multitype:\EmailConnector\model\mail\Headers string multitype:
      */
     public function toArray()
     {
@@ -183,7 +174,6 @@ class Mail
         {
             $string .= "\t * " . $part . "\n";
         }
-
         return $string;
     }
 }

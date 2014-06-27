@@ -9,9 +9,11 @@
 namespace SimpleMailReceiver;
 
 use SimpleMailReceiver\Commons\Collection;
+use SimpleMailReceiver\Exceptions\ExceptionThrower;
 use SimpleMailReceiver\Protocols\ProtocolFactory;
 use SimpleMailReceiver\Protocols\ProtocolInterface;
 use SimpleMailReceiver\Commons\Mailserver;
+use Symfony\Component\Yaml\Exception\RuntimeException;
 
 class Receiver
 {
@@ -72,7 +74,7 @@ class Receiver
     {
         // is imap installed? Fail early!
         if (!in_array('imap', get_loaded_extensions())) {
-            trigger_error(
+            new RuntimeException(
                 "It looks like you do not have imap installed.\n" .
                 "IMAP is required to make request to the mail servers using the " .
                 EmailConnectorConstants::USER_AGENT . " \n" . "library. For install instructions,
@@ -80,8 +82,13 @@ class Receiver
                 E_USER_WARNING
             );
         }
+        // init the exception thrower!
+        $excThrower = new ExceptionThrower();
+        $excThrower->start();
+
         $this->setConfig($config ? : new Collection());
         $factory      = new ProtocolFactory();
+
         $this->protocol = $factory->create($this->getConfig('protocol'));
         $this->protocol->setMailServer($this->getConfig('host'))
             //Set the port
@@ -113,7 +120,7 @@ class Receiver
      */
     public function getMails()
     {
-        return $this->mailer->retriveAllMails();
+        return $this->mailer->retrieveAllMails();
     }
 
     /**
@@ -124,7 +131,7 @@ class Receiver
      */
     public function getMail($id)
     {
-        return $this->mailer->retriveMail($id);
+        return $this->mailer->retrieveMail($id);
     }
 
     /**
@@ -147,6 +154,16 @@ class Receiver
         return $this->mailer->countUnreadMails();
     }
 
+    /**
+     * Delete the mail by id
+     *
+     * @param $id
+     * @return bool
+     */
+    public function deleteMail($id)
+    {
+        return $this->mailer->delete($id);
+    }
     /**
      * Close the connection
      *

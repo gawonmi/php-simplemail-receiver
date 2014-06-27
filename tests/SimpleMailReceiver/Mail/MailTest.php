@@ -2,6 +2,7 @@
 require_once 'PHPUnit/Autoload.php';
 
 use SimpleMailReceiver\Mail\Mail;
+use SimpleMailReceiver\Mail\Headers;
 use SimpleMailReceiver\Mail\Attachment;
 use SimpleMailReceiver\Commons\Collection;
 
@@ -14,7 +15,7 @@ class MailTest extends \PHPUnit_Framework_TestCase
     private $mail;
 
     /**
-     * @var Collection
+     * @var Headers
      */
     private $mailHeader;
 
@@ -30,14 +31,15 @@ class MailTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->mailHeader      = new Collection(array(
-            'toaddress'       => 'mavianceTest@gmail.com',
-            'fromaddress'     => 'Jose Luis Cardosa Manzano <jlcardosa@gmail.com>',
-            'reply_toaddress' => 'Jose Luis Cardosa Manzano <jlcardosa@gmail.com>',
-            'subject'         => 'Pruuueba',
-            'Unseen'          => 'U',
-            'udate'           => '19586575518',
-            'Size'            => '1024'
+        $this->mailHeader      = new Headers(array(
+            'msgno'   => '125545d4f5d',
+            'to'      => 'mavianceTest@gmail.com',
+            'from'    => 'Jose Luis Cardosa Manzano <jlcardosa@gmail.com>',
+            'reply'   => 'Jose Luis Cardosa Manzano <jlcardosa@gmail.com>',
+            'subject' => 'Pruuueba',
+            'udate'   => '19586575518',
+            'unseen'  => 'U',
+            'size'    => '1024'
         ));
         $this->mailBody        = 'Body with attachmentes';
         $this->mailAttachments = new Collection(array(

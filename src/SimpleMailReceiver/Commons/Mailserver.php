@@ -2,15 +2,27 @@
 /**
  * @package
  * @subpackage
- * @author    Michael Nowag<michael.nowag@maviance.com>
+ * @author    Michael Nowag <michael.nowag@maviance.com>
  * @copyright maviance GmbH 2014
  */
-
 namespace SimpleMailReceiver\Commons;
 
+use SimpleMailReceiver\Exceptions\SimpleMailReceiverException;
 use SimpleMailReceiver\Mail\Attachment;
 use SimpleMailReceiver\Mail\Mail;
+use SimpleMailReceiver\Mail\Headers;
 
+/**
+ * Common class that handle with all the protocols to realize options with the mail server
+ *
+ * @category SimpleMailReceiver
+ * @package  SimpleMailReceiver\Commons
+ * @author   Jose Luis Cardosa <joseluis.cardosamanzano@maviance.com>
+ * @license  maviance GmbH 2014
+ * @version  Release: dev-master
+ * @link     Mailserver
+ *
+ */
 class Mailserver
 {
 
@@ -26,7 +38,7 @@ class Mailserver
      */
     public function __construct($imap_res)
     {
-        $this->mailbox = $imap_res;
+            $this->mailbox = $imap_res;
     }
 
     /**
@@ -36,11 +48,11 @@ class Mailserver
      *
      * @return null|Mail
      */
-    public function retriveMail($id)
+    public function retrieveMail($id)
     {
         $mail = new Mail();
-        $mail->setMailHeader($this->retriveHeaders($id));
-        $mail->setBody($this->retriveBody($id));
+        $mail->setMailHeader($this->retrieveHeaders($id));
+        $mail->setBody($this->retrieveBody($id));
         $mail->setAttachments($this->retrieveAttachments($id));
         return $mail;
     }
@@ -50,12 +62,12 @@ class Mailserver
      *
      * @return Collection
      */
-    public function retriveAllMails()
+    public function retrieveAllMails()
     {
         $mails = new Collection();
         for($i = 1; $i <= $this->countAllMails(); $i++)
         {
-            $mails->addItem($this->retriveMail($i));
+            $mails->addItem($this->retrieveMail($i));
         }
         return $mails;
     }
@@ -65,25 +77,32 @@ class Mailserver
      *
      * @param $id
      *
-     * @return Collection
+     * @return Headers
      */
-    public function retriveHeaders($id) // Get Header info
+    public function retrieveHeaders($id) // Get Header info
     {
-        $mail_header    = imap_header($this->mailbox, $id);
-        if (!is_null($mail_header)) {
-            // more details must be added
-            $data_header = array(
-                'msgno'   => ( property_exists($mail_header,'msgno') ? $mail_header->msgno : null),
-                'to'      => ( property_exists($mail_header,'toaddress') ? $mail_header->toaddress : null),
-                'from'    => ( property_exists($mail_header,'fromaddress') ? $mail_header->fromaddress : null),
-                'reply'   => ( property_exists($mail_header,'reply_toaddress') ? $mail_header->reply_toaddress : null),
-                'subject' => ( property_exists($mail_header,'subject') ? $mail_header->subject : null),
-                'udate'   => ( property_exists($mail_header,'udate') ? $mail_header->udate : null),
-                'unseen'  => ( property_exists($mail_header,'Unseen') ? $mail_header->Unseen : null),
-                'size'    => ( property_exists($mail_header,'Size') ? $mail_header->Size : null)
-            );
+        try
+        {
+            $mail_header    = imap_header($this->mailbox, $id);
+            if (!is_null($mail_header)) {
+                // more details must be added
+                $data_header = array(
+                    'msgno'   => ( property_exists($mail_header,'msgno') ? $mail_header->msgno : null),
+                    'to'      => ( property_exists($mail_header,'toaddress') ? $mail_header->toaddress : null),
+                    'from'    => ( property_exists($mail_header,'fromaddress') ? $mail_header->fromaddress : null),
+                    'reply'   => ( property_exists($mail_header,'reply_toaddress') ? $mail_header->reply_toaddress : null),
+                    'subject' => ( property_exists($mail_header,'subject') ? $mail_header->subject : null),
+                    'udate'   => ( property_exists($mail_header,'udate') ? $mail_header->udate : null),
+                    'unseen'  => ( property_exists($mail_header,'Unseen') ? $mail_header->Unseen : null),
+                    'size'    => ( property_exists($mail_header,'Size') ? $mail_header->Size : null)
+                );
+                $header = new Headers($data_header);
+            }
+            return $header;
+        }catch (\Exception $e)
+        {
+            throw new SimpleMailReceiverException("Error retrieving header no: ". $id . " ." . $e->getMessage(), $e->getCode());
         }
-        return new Collection($data_header);
     }
 
     /**
@@ -91,17 +110,24 @@ class Mailserver
      *
      * @param string $id email identifier
      *
+     * @throws \SimpleMailReceiver\Exceptions\SimpleMailReceiverException
      * @return string
      */
-    public function retriveBody($id)
+    public function retrieveBody($id)
     {
-        $body = $this->get_part($this->mailbox, $id, "TEXT/HTML");
-        // fallback to plain text
-        if ($body == "") {
-            $body = $this->get_part($this->mailbox, $id, "TEXT/PLAIN");
-        }
+        try
+        {
+            $body = $this->get_part($this->mailbox, $id, "TEXT/HTML");
+            // fallback to plain text
+            if ($body == "") {
+                $body = $this->get_part($this->mailbox, $id, "TEXT/PLAIN");
+            }
 
-        return $body;
+            return $body;
+        }catch (\Exception $e)
+        {
+            throw new SimpleMailReceiverException("Error retrieving body no: ". $id . " ." . $e->getMessage(), $e->getCode());
+        }
     }
 
     /**
@@ -109,64 +135,83 @@ class Mailserver
      *
      * @param string $id email identifier
      *
+     * @throws \SimpleMailReceiver\Exceptions\SimpleMailReceiverException
      * @return Collection
      */
     public function retrieveAttachments($id)
     {
-        $attachments = new Collection();
-        $structure   = imap_fetchstructure($this->mailbox, $id);
+        try
+        {
+            $attachments = new Collection();
+            $structure   = imap_fetchstructure($this->mailbox, $id);
 
-        foreach ($structure->parts as $key => $value) {
-            $encoding = $structure->parts[ $key ]->encoding;
-            if ($structure->parts[ $key ]->ifdparameters) {
-                $name    = $structure->parts[ $key ]->dparameters[ 0 ]->value;
-                $message = imap_fetchbody($this->mailbox, $id, $key + 1);
-                if ($encoding == 0) {
-                    $message = imap_8bit($message);
+            foreach ($structure->parts as $key => $value) {
+                $encoding = $structure->parts[ $key ]->encoding;
+                if ($structure->parts[ $key ]->ifdparameters) {
+                    $name    = $structure->parts[ $key ]->dparameters[ 0 ]->value;
+                    $message = imap_fetchbody($this->mailbox, $id, $key + 1);
+                    if ($encoding == 0) {
+                        $message = imap_8bit($message);
+                    }
+                    if ($encoding == 1) {
+                        $message = imap_8bit($message);
+                    }
+                    if ($encoding == 2) {
+                        $message = imap_binary($message);
+                    }
+                    if ($encoding == 3) {
+                        $message = imap_base64($message);
+                    }
+                    if ($encoding == 4) {
+                        $message = quoted_printable_decode($message);
+                    }
+                    if ($encoding == 5) {
+                        $message = $message;
+                    }
+                    $name_ext = pathinfo($name);
+                    $attachment = new Attachment($name_ext[ 'filename' ], $message, $name_ext[ 'extension' ], sizeof($message));
+                    $attachments->addItem($attachment);
                 }
-                if ($encoding == 1) {
-                    $message = imap_8bit($message);
-                }
-                if ($encoding == 2) {
-                    $message = imap_binary($message);
-                }
-                if ($encoding == 3) {
-                    $message = imap_base64($message);
-                }
-                if ($encoding == 4) {
-                    $message = quoted_printable_decode($message);
-                }
-                if ($encoding == 5) {
-                    $message = $message;
-                }
-                $name_ext = pathinfo($name);
-                $attachment = new Attachment($name_ext[ 'filename' ], $message, $name_ext[ 'extension' ], sizeof($message));
-                $attachments->addItem($attachment);
             }
+            return $attachments;
+        }catch (\Exception $e)
+        {
+            throw new SimpleMailReceiverException("Error retrieving attachments no: ". $id . " ." . $e->getMessage(), $e->getCode());
         }
-
-        return $attachments;
     }
 
     /**
      * Get total Number of unread emails
      *
+     * @throws \SimpleMailReceiver\Exceptions\SimpleMailReceiverException
      * @return int
      */
     public function countUnreadMails()
     {
-        $info = imap_mailboxmsginfo($this->mailbox);
-        return ( property_exists($info,'unread') ? (int) $info->unread : null);
+        try
+        {
+            $info = imap_mailboxmsginfo($this->mailbox);
+            return ( property_exists($info,'unread') ? (int) $info->unread : null);
+        }catch (\Exception $e)
+        {
+            throw new SimpleMailReceiverException("Error getting the number of unread mails" . $e->getMessage(), $e->getCode());
+        }
     }
 
     /**
      * Get total number of all emails
      *
+     * @throws \SimpleMailReceiver\Exceptions\SimpleMailReceiverException
      * @return int
      */
     public function countAllMails()
     {
-        return imap_num_msg($this->mailbox);
+        try{
+            return imap_num_msg($this->mailbox);
+        }catch (\Exception $e)
+        {
+            throw new SimpleMailReceiverException("Error getting the number of mails" . $e->getMessage(), $e->getCode());
+        }
     }
 
     /**
@@ -174,21 +219,35 @@ class Mailserver
      *
      * @param string $id email identifier
      *
+     * @throws \SimpleMailReceiver\Exceptions\SimpleMailReceiverException
      * @return bool <b>TRUE</b> on success or <b>FALSE</b> on failure.
      */
     public function delete($id)
     {
-        return imap_delete($this->mailbox, $id);
+        try
+        {
+            return imap_delete($this->mailbox, $id);
+        }catch (\Exception $e)
+        {
+            throw new SimpleMailReceiverException("Error deleting the mails no ". $id . " ." . $e->getMessage(), $e->getCode());
+        }
+
     }
 
     /**
      * Close mailbox
      *
+     * @throws \SimpleMailReceiver\Exceptions\SimpleMailReceiverException
      * @return bool <b>TRUE</b> on success or <b>FALSE</b> on failure.
      */
     public function close()
     {
-        return imap_close($this->mailbox, CL_EXPUNGE);
+        try{
+            return imap_close($this->mailbox, CL_EXPUNGE);
+        }catch (\Exception $e)
+        {
+            throw new SimpleMailReceiverException("Error closing the connection" . $e->getMessage(), $e->getCode());
+        }
     }
 
     /**
