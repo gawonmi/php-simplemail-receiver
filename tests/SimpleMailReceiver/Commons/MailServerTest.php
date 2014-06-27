@@ -1,30 +1,26 @@
 <?php
 require_once 'PHPUnit/Autoload.php';
 
-use SimpleMailReceiver\Commons\MailServer;;
+use SimpleMailReceiver\Commons\Mailserver;
 
-class MailTest extends \PHPUnit_Framework_TestCase
+class MailServerTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var MailServer
+     * @var Mailserver
      */
     private $mailer;
 
     protected function setUp()
     {
-        $imap_res = imap_header('{imap.google.com:993/imap/ssl}','maviancetest@gmail.com','Mav1234567');
-        $this->mailer = new MailServer($imap_res);
-    }
-
-    protected function tearDown()
-    {
-        $this->mailer->close();
+        $imap_res = imap_open('{imap.gmail.com:993/imap/ssl}INBOX','maviancetest@gmail.com','Mav1234567');
+        $this->mailer = new Mailserver($imap_res);
     }
 
     public function testGetSizeMailBox()
     {
         $this->assertGreaterThan(0, $this->mailer->countAllMails());
+        $this->mailer->close();
     }
 
     public function testGetSizeMailBoxUnread()
@@ -35,7 +31,7 @@ class MailTest extends \PHPUnit_Framework_TestCase
     public function testGetHeader()
     {
         $header = $this->mailer->retriveHeaders(4);
-        $this->assertEquals($header['subject'], 'Test');
+        $this->assertEquals($header->getItem('subject'), 'Test');
     }
 
     public function testGetBody()
@@ -47,20 +43,20 @@ class MailTest extends \PHPUnit_Framework_TestCase
     public function testGetAttachments()
     {
         $attachments = $this->mailer->retrieveAttachments(4);
-        $this->assertEquals($attachments[ 0 ]->getName(), 'test1');
-        $this->assertEquals($attachments[ 1 ]->getName(), 'test2');
-        $this->assertEquals($attachments[ 2 ]->getName(), 'test3');
+        $this->assertEquals($attachments->getItem(0)->getName(), 'test1');
+        $this->assertEquals($attachments->getItem(1)->getName(), 'test2');
+        $this->assertEquals($attachments->getItem(2)->getName(), 'test3');
     }
 
     public function testGetMail()
     {
         $mail = $this->mailer->retriveMail(4);
         $header = $mail->getMailHeader();
-        $this->assertEquals($header['subject'], 'Test');
+        $this->assertEquals($header->getItem('subject'), 'Test');
         $this->assertContains('Body Test', $mail->getBody());
         $attachments = $mail->getAttachments();
-        $this->assertEquals($attachments[ 0 ]->getName(), 'test1');
-        $this->assertEquals($attachments[ 1 ]->getName(), 'test2');
-        $this->assertEquals($attachments[ 2 ]->getName(), 'test3');
+        $this->assertEquals($attachments->getItem(0)->getName(), 'test1');
+        $this->assertEquals($attachments->getItem(1)->getName(), 'test2');
+        $this->assertEquals($attachments->getItem(2)->getName(), 'test3');
     }
 }

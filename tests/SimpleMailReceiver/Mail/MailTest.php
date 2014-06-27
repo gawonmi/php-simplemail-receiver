@@ -45,14 +45,14 @@ class MailTest extends \PHPUnit_Framework_TestCase
             new Attachment('prueba2', 'Content of attachment2', 'txt', '2048'),
             new Attachment('prueba3', 'Content of attachment3', 'txt', '4096')
         ));
-        $this->mail            = new Mail($this->mailHeader, $this->mailBody, $this->mailAttachments);
+        $this->mail = new Mail();
+        $this->mail->setMailHeader($this->mailHeader);
+        $this->mail->setBody($this->mailBody);
+        $this->mail->setAttachments($this->mailAttachments);
     }
 
     public function testGetterAndSetter()
     {
-        $this->mail->setMailHeader($this->mailHeader);
-        $this->mail->setBody($this->mailBody);
-        $this->mail->setAttachments($this->mailAttachments);
         $this->assertEquals($this->mail->getMailHeader(), $this->mailHeader);
         $this->assertEquals($this->mail->getBody(), $this->mailBody);
         $this->assertEquals($this->mail->getAttachments(), $this->mailAttachments);

@@ -6,7 +6,7 @@
  * @copyright maviance GmbH 2014 
  */
 
-namespace SimpleMailReceiver\Protocol;
+namespace SimpleMailReceiver\Protocols;
 
 
 interface ProtocolInterface {

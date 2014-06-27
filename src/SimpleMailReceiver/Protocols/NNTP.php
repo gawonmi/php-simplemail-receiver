@@ -6,12 +6,12 @@
  * @copyright maviance GmbH 2014 
  */
 
-namespace SimpleMailReceiver\Protocol;
+namespace SimpleMailReceiver\Protocols;
 
 
 use SimpleMailReceiver\Commons\AbstractMailTransport;
 
-class IMAP extends AbstractMailTransport implements ProtocolInterface {
+class NNTP extends AbstractMailTransport implements ProtocolInterface{
 
     /**
      * Create the string for connection and connect to the mail Server
@@ -23,7 +23,7 @@ class IMAP extends AbstractMailTransport implements ProtocolInterface {
     function connect($username, $password)
     {
         $this->ssl = (($this->ssl == false) ? "/novalidate-cert" : "/ssl");
-        $string = "{" . $this->mailserver . ":" . $this->port . "/imap" . $this->ssl ."}" . $this->folder;
+        $string = "{" . $this->mailserver . ":" . $this->port . "/nntp" . $this->ssl ."}" . $this->folder;
         return imap_open($string, $username, $password);
     }
-}
+} 

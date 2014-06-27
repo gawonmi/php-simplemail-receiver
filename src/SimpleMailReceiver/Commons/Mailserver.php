@@ -11,7 +11,7 @@ namespace SimpleMailReceiver\Commons;
 use SimpleMailReceiver\Mail\Attachment;
 use SimpleMailReceiver\Mail\Mail;
 
-class MailServer
+class Mailserver
 {
 
     /**
@@ -24,7 +24,7 @@ class MailServer
      *
      * @param resource $imap_res The resource to use in the imap functions.
      */
-    public function __constructor($imap_res)
+    public function __construct($imap_res)
     {
         $this->mailbox = $imap_res;
     }
@@ -53,7 +53,7 @@ class MailServer
     public function retriveAllMails()
     {
         $mails = new Collection();
-        for($i = 0; $i < $this->countAllMails(); $i++)
+        for($i = 1; $i <= $this->countAllMails(); $i++)
         {
             $mails->addItem($this->retriveMail($i));
         }
@@ -116,36 +116,35 @@ class MailServer
         $attachments = new Collection();
         $structure   = imap_fetchstructure($this->mailbox, $id);
 
-        if (is_array($structure)) {
-            foreach ($structure->parts as $key => $value) {
-                $encoding = $structure->parts[ $key ]->encoding;
-                if ($structure->parts[ $key ]->ifdparameters) {
-                    $name    = $structure->parts[ $key ]->dparameters[ 0 ]->value;
-                    $message = imap_fetchbody($this->mailbox, $id, $key + 1);
-                    if ($encoding == 0) {
-                        $message = imap_8bit($message);
-                    }
-                    if ($encoding == 1) {
-                        $message = imap_8bit($message);
-                    }
-                    if ($encoding == 2) {
-                        $message = imap_binary($message);
-                    }
-                    if ($encoding == 3) {
-                        $message = imap_base64($message);
-                    }
-                    if ($encoding == 4) {
-                        $message = quoted_printable_decode($message);
-                    }
-                    if ($encoding == 5) {
-                        $message = $message;
-                    }
-                    $name_ext = pathinfo($name);
-                    $attachment = new Attachment($name_ext[ 'filename' ], $message, $name_ext[ 'extension' ], sizeof($message));
-                    $attachments->addItem($attachment);
+        foreach ($structure->parts as $key => $value) {
+            $encoding = $structure->parts[ $key ]->encoding;
+            if ($structure->parts[ $key ]->ifdparameters) {
+                $name    = $structure->parts[ $key ]->dparameters[ 0 ]->value;
+                $message = imap_fetchbody($this->mailbox, $id, $key + 1);
+                if ($encoding == 0) {
+                    $message = imap_8bit($message);
                 }
+                if ($encoding == 1) {
+                    $message = imap_8bit($message);
+                }
+                if ($encoding == 2) {
+                    $message = imap_binary($message);
+                }
+                if ($encoding == 3) {
+                    $message = imap_base64($message);
+                }
+                if ($encoding == 4) {
+                    $message = quoted_printable_decode($message);
+                }
+                if ($encoding == 5) {
+                    $message = $message;
+                }
+                $name_ext = pathinfo($name);
+                $attachment = new Attachment($name_ext[ 'filename' ], $message, $name_ext[ 'extension' ], sizeof($message));
+                $attachments->addItem($attachment);
             }
         }
+
         return $attachments;
     }
 
@@ -234,7 +233,7 @@ class MailServer
             $structure = imap_fetchstructure($stream, $msg_number);
         }
         if ($structure) {
-            if ($mime_type == $this->get_mime_type($structure)) {
+            if ($mime_type == $this->extractMimetype($structure)) {
                 if (!$part_number) {
                     $part_number = "1";
                 }

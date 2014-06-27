@@ -6,7 +6,7 @@
  * @copyright maviance GmbH 2014
  */
 
-namespace SimpleMailReceiver\Protocol;
+namespace SimpleMailReceiver\Protocols;
 
 use SimpleMailReceiver\Commons\AbstractMailTransport;
 
@@ -22,7 +22,7 @@ class POP extends AbstractMailTransport implements ProtocolInterface
      */
     function connect($username, $password)
     {
-        $this->ssl = (($this->ssl == false) ? "/novalidate-cert" : "");
+        $this->ssl = (($this->ssl == false) ? "/novalidate-cert" : "/ssl");
         $string = "{" . $this->mailserver . ":" . $this->port . "/pop3" . $this->ssl ."}" . $this->folder;
         return imap_open($string, $username, $password);
     }

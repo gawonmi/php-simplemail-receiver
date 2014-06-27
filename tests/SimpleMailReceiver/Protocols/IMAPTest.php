@@ -2,9 +2,9 @@
 
 require_once 'PHPUnit/Autoload.php';
 
-use SimpleMailReceiver\Protocol\IMAP;
-use SimpleMailReceiver\Protocol\POP;
-use SimpleMailReceiver\Protocol\ProtocolInterface;
+use SimpleMailReceiver\Protocols\IMAP;
+use SimpleMailReceiver\Protocols\POP;
+use SimpleMailReceiver\Protocols\ProtocolInterface;
 use SimpleMailReceiver\Commons\Collection;
 
 class IMAPTest extends \PHPUnit_Framework_TestCase
@@ -33,21 +33,21 @@ class IMAPTest extends \PHPUnit_Framework_TestCase
     public function testIMAP()
     {
         $this->protocol = new IMAP();
-        $this->protocol->setMailserver('imap.google.com')
+        $this->protocol->setMailserver('imap.gmail.com')
             ->setPort(993)
             ->setFolder('INBOX')
             ->setSsl(true);
-        $this->assertNotNull($this->protocol->connect($this->config['username'], $this->config['password']));
+        $this->assertNotNull($this->protocol->connect($this->config->getItem('username'), $this->config->getItem('password')));
     }
 
     public function testPOP()
     {
         $this->protocol = new POP();
-        $this->protocol->setMailserver('pop.google.com')
+        $this->protocol->setMailserver('pop.gmail.com')
             ->setPort(995)
             ->setFolder('INBOX')
-            ->setSsl(false);
-        $this->assertNotNull($this->protocol->connect($this->config['username'], $this->config['password']));
+            ->setSsl(true);
+        $this->assertNotNull($this->protocol->connect($this->config->getItem('username'), $this->config->getItem('password')));
     }
 
     public function testNNTP()

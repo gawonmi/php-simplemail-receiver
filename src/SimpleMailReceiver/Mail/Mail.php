@@ -51,7 +51,7 @@ class Mail
     /**
      * Get the mail header
      *
-     * @return unknown
+     * @return Collection
      */
     public function getMailHeader()
     {
@@ -109,7 +109,7 @@ class Mail
      *
      * @param Collection $attachments The attachments
      *
-     * @return
+     * @return $this
      */
     public function setAttachments($attachments)
     {

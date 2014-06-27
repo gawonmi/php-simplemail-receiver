@@ -46,6 +46,11 @@ class Collection implements \IteratorAggregate
         $this->items[ ] = $item;
     }
 
+    public function getItem($key)
+    {
+        return $this->items[ $key ];
+    }
+
     /**
      * Get the array Iterator
      *

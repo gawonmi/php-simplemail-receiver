@@ -9,9 +9,9 @@
 namespace SimpleMailReceiver;
 
 use SimpleMailReceiver\Commons\Collection;
-use SimpleMailReceiver\Protocol\ProtocolFactory;
-use SimpleMailReceiver\Protocol\ProtocolInterface;
-use SimpleMailReceiver\Commons\MailServer;
+use SimpleMailReceiver\Protocols\ProtocolFactory;
+use SimpleMailReceiver\Protocols\ProtocolInterface;
+use SimpleMailReceiver\Commons\Mailserver;
 
 class Receiver
 {
@@ -22,7 +22,7 @@ class Receiver
     private $protocol;
 
     /**
-     * @var MailServer
+     * @var Mailserver
      */
     private $mailer;
 
@@ -39,7 +39,7 @@ class Receiver
      */
     final public function getConfig($key = false)
     {
-        return $key ? $this->config[ $key ] : $this->config;
+        return $key ? $this->config->getItem( $key ) : $this->config;
     }
 
     /**
@@ -98,7 +98,7 @@ class Receiver
     public function connect()
     {
         //Do the connection
-        $this->mailer = new MailServer(
+        $this->mailer = new Mailserver(
             $this->protocol->connect(
                 $this->getConfig('username'),
                 $this->getConfig('password')

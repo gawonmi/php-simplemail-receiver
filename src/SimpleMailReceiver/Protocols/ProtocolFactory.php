@@ -6,7 +6,7 @@
  * @copyright maviance GmbH 2014
  */
 
-namespace SimpleMailReceiver\Protocol;
+namespace SimpleMailReceiver\Protocols;
 
 class ProtocolFactory
 {
@@ -38,10 +38,10 @@ class ProtocolFactory
      */
     public function create($protocol)
     {
-        if (!array_key_exists($protocol, $this->$protocolList)) {
+        if (!array_key_exists($protocol, $this->protocolList)) {
             throw new \InvalidArgumentException("$protocol is not valid protocol");
         }
-        $className = $this->$protocolList[ $protocol ];
+        $className = $this->protocolList[ $protocol ];
 
         return new $className();
     }
