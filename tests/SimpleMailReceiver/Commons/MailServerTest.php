@@ -13,7 +13,7 @@ class MailServerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $imap_res = imap_open('{imap.gmail.com:993/imap/ssl}INBOX','maviancetest@gmail.com','Mav1234567');
+        $imap_res = imap_open('{imap.gmail.com:993/imap/ssl}INBOX','username','password');
         $this->mailer = new Mailserver($imap_res);
     }
 

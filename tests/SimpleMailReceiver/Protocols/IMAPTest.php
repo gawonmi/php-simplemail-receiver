@@ -25,8 +25,8 @@ class IMAPTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->config = new Collection(array(
-            'username' => 'maviancetest@gmail.com',
-            'password' => 'Mav1234567'
+            'username' => 'username',
+            'password' => 'password'
         ));
     }
 

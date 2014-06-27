@@ -21,8 +21,8 @@ class ReceiverTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->config = new Collection(array(
-            'username' => 'maviancetest@gmail.com',
-            'password' => 'Mav1234567',
+            'username' => 'username',
+            'password' => 'password',
             'host' => 'imap.gmail.com',
             'port' => 993,
             'protocol' => 'imap',
