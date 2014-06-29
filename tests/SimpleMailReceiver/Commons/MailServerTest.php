@@ -15,7 +15,6 @@ class MailServerTest extends \PHPUnit_Framework_TestCase
     {
         $imap_res = imap_open('{imap.gmail.com:993/imap/ssl}INBOX','username','password');
         $this->mailer = new Mailserver($imap_res);
-        $thrower->Stop();
     }
 
     public function testGetSizeMailBox()

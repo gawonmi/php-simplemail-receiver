@@ -110,7 +110,7 @@ class Headers
         $this->setFrom($header_mail['from']);
         $this->setReply($header_mail['reply']);
         $this->subject = $header_mail['subject'];
-        $this->setUnseen($header_mail['unseen']);
+        $this->setUnseen($header_mail['unseen'] == 'U' ? true : false);
         $this->date = new \DateTime('@' . $header_mail['udate']);
         $this->size = $header_mail['size'];
     }

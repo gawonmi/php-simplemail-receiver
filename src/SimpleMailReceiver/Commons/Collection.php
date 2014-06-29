@@ -32,9 +32,7 @@ class Collection implements \IteratorAggregate, \Countable
      */
     public function __construct(array $items = null)
     {
-        if (!empty($items)) {
-            $this->items = $items;
-        }
+        $this->items = $items;
     }
 
     /**

@@ -170,6 +170,7 @@ class Mail
         $string .= $this->body;
         $string .= "\n--------------------------------------------------------------------------------\n";
         $string .= "Attached files: \n";
+        //TODO: if not attachments.. what?? fail!!
         foreach ($this->attachments as $part)
         {
             $string .= "\t * " . $part . "\n";
