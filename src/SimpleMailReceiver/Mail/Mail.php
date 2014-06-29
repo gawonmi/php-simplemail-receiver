@@ -97,7 +97,7 @@ class Mail
     /**
      * Get the attachments
      *
-     * @return the array
+     * @return Collection
      */
     public function getAttachments()
     {

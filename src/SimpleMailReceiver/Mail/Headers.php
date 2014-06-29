@@ -301,7 +301,7 @@ class Headers
     /**
      * Get the DATE
      *
-     * @return DateTime
+     * @return \DateTime
      */
     public function getDate()
     {
