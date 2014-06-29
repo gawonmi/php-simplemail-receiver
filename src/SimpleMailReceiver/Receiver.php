@@ -111,6 +111,7 @@ class Receiver
                 $this->getConfig('password')
             )
         );
+        return true;
     }
 
     /**
