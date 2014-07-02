@@ -38,7 +38,17 @@ class Mailserver
      */
     public function __construct($imap_res)
     {
-            $this->mailbox = $imap_res;
+        $this->mailbox = $imap_res;
+    }
+
+    /**
+     * Ping the connection
+     *
+     * @return bool
+     */
+    public function ping()
+    {
+        return imap_ping($this->mailbox);
     }
 
     /**
@@ -145,33 +155,35 @@ class Mailserver
         {
             $attachments = new Collection();
             $structure   = imap_fetchstructure($this->mailbox, $id);
-
-            foreach ($structure->parts as $key => $value) {
-                $encoding = $structure->parts[ $key ]->encoding;
-                if ($structure->parts[ $key ]->ifdparameters) {
-                    $name    = $structure->parts[ $key ]->dparameters[ 0 ]->value;
-                    $message = imap_fetchbody($this->mailbox, $id, $key + 1);
-                    if ($encoding == 0) {
-                        $message = imap_8bit($message);
+            if(property_exists($structure,'parts'))
+            {
+                foreach ($structure->parts as $key => $value) {
+                    $encoding = $structure->parts[ $key ]->encoding;
+                    if ($structure->parts[ $key ]->ifdparameters) {
+                        $name    = $structure->parts[ $key ]->dparameters[ 0 ]->value;
+                        $message = imap_fetchbody($this->mailbox, $id, $key + 1);
+                        if ($encoding == 0) {
+                            $message = imap_8bit($message);
+                        }
+                        if ($encoding == 1) {
+                            $message = imap_8bit($message);
+                        }
+                        if ($encoding == 2) {
+                            $message = imap_binary($message);
+                        }
+                        if ($encoding == 3) {
+                            $message = imap_base64($message);
+                        }
+                        if ($encoding == 4) {
+                            $message = quoted_printable_decode($message);
+                        }
+                        if ($encoding == 5) {
+                            $message = $message;
+                        }
+                        $name_ext = pathinfo($name);
+                        $attachment = new Attachment($name_ext[ 'filename' ], $message, $name_ext[ 'extension' ], sizeof($message));
+                        $attachments->add($attachment);
                     }
-                    if ($encoding == 1) {
-                        $message = imap_8bit($message);
-                    }
-                    if ($encoding == 2) {
-                        $message = imap_binary($message);
-                    }
-                    if ($encoding == 3) {
-                        $message = imap_base64($message);
-                    }
-                    if ($encoding == 4) {
-                        $message = quoted_printable_decode($message);
-                    }
-                    if ($encoding == 5) {
-                        $message = $message;
-                    }
-                    $name_ext = pathinfo($name);
-                    $attachment = new Attachment($name_ext[ 'filename' ], $message, $name_ext[ 'extension' ], sizeof($message));
-                    $attachments->add($attachment);
                 }
             }
             return $attachments;

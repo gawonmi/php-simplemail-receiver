@@ -100,6 +100,16 @@ class Receiver
     }
 
     /**
+     * Ping the connection
+     *
+     * @return bool
+     */
+    public function ping()
+    {
+        return $this->mailer->ping();
+    }
+
+    /**
      * Connect to the mail Server
      */
     public function connect()
