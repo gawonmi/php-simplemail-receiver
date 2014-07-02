@@ -40,7 +40,7 @@ class Collection implements \IteratorAggregate, \Countable
      *
      * @param $item
      */
-    public function addItem($item)
+    public function add($item)
     {
         $this->items[ ] = $item;
     }
@@ -51,9 +51,19 @@ class Collection implements \IteratorAggregate, \Countable
      * @param $key
      * @return mixed
      */
-    public function getItem($key = null)
+    public function get($key)
     {
-        return $key ? $this->items[ $key ] : $this->items;
+        return $this->items[ $key ];
+    }
+
+    /**
+     * Get all the collection
+     *
+     * @return array
+     */
+    public function getAll()
+    {
+        return $this->items;
     }
 
     /**

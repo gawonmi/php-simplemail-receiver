@@ -67,7 +67,7 @@ class Mailserver
         $mails = new Collection();
         for($i = 1; $i <= $this->countAllMails(); $i++)
         {
-            $mails->addItem($this->retrieveMail($i));
+            $mails->add($this->retrieveMail($i));
         }
         return $mails;
     }
@@ -77,6 +77,7 @@ class Mailserver
      *
      * @param $id
      *
+     * @throws \SimpleMailReceiver\Exceptions\SimpleMailReceiverException
      * @return Headers
      */
     public function retrieveHeaders($id) // Get Header info
@@ -170,7 +171,7 @@ class Mailserver
                     }
                     $name_ext = pathinfo($name);
                     $attachment = new Attachment($name_ext[ 'filename' ], $message, $name_ext[ 'extension' ], sizeof($message));
-                    $attachments->addItem($attachment);
+                    $attachments->add($attachment);
                 }
             }
             return $attachments;
@@ -195,6 +196,24 @@ class Mailserver
         }catch (\Exception $e)
         {
             throw new SimpleMailReceiverException("Error getting the number of unread mails" . $e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * Search mails by a determinate string according to imap_search
+     *
+     * @param $string
+     * @return array
+     * @throws \SimpleMailReceiver\Exceptions\SimpleMailReceiverException
+     */
+    public function searchMails($string)
+    {
+        try
+        {
+            return imap_search($this->mailbox, $string);
+        }catch (\Exception $e)
+        {
+        throw new SimpleMailReceiverException("Error getting the number of unread mails" . $e->getMessage(), $e->getCode());
         }
     }
 

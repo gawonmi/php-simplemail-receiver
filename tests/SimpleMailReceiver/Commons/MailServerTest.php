@@ -13,7 +13,7 @@ class MailServerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $imap_res = imap_open('{imap.gmail.com:993/imap/ssl}INBOX','username','password');
+        $imap_res = imap_open('{imap.gmail.com:993/imap/ssl}INBOX','username','password'); //'username','password'
         $this->mailer = new Mailserver($imap_res);
     }
 
@@ -43,9 +43,24 @@ class MailServerTest extends \PHPUnit_Framework_TestCase
     public function testGetAttachments()
     {
         $attachments = $this->mailer->retrieveAttachments(4);
-        $this->assertEquals($attachments->getItem(0)->getName(), 'test1');
-        $this->assertEquals($attachments->getItem(1)->getName(), 'test2');
-        $this->assertEquals($attachments->getItem(2)->getName(), 'test3');
+        print_r($attachments->get(0));
+        $this->assertEquals($attachments->get(0)->getName(), 'test1');
+        $this->assertEquals($attachments->get(1)->getName(), 'test2');
+        $this->assertEquals($attachments->get(2)->getName(), 'test3');
+    }
+
+    public function testSearchMails()
+    {
+        $string = 'ALL';
+        $mails = $this->mailer->searchMails($string);
+        $this->assertEquals(7, sizeof($mails));
+    }
+
+    public function testSearchMails2()
+    {
+        $string = 'SUBJECT "Test"';
+        $mails = $this->mailer->searchMails($string);
+        $this->assertEquals(1, sizeof($mails));
     }
 
     public function testGetMail()
@@ -55,8 +70,8 @@ class MailServerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($header->getSubject(), 'Test');
         $this->assertContains('Body Test', $mail->getBody());
         $attachments = $mail->getAttachments();
-        $this->assertEquals($attachments->getItem(0)->getName(), 'test1');
-        $this->assertEquals($attachments->getItem(1)->getName(), 'test2');
-        $this->assertEquals($attachments->getItem(2)->getName(), 'test3');
+        $this->assertEquals($attachments->get(0)->getName(), 'test1');
+        $this->assertEquals($attachments->get(1)->getName(), 'test2');
+        $this->assertEquals($attachments->get(2)->getName(), 'test3');
     }
 }

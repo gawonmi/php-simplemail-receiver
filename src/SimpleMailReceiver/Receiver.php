@@ -41,7 +41,7 @@ class Receiver
      */
     final public function getConfig($key = false)
     {
-        return $key ? $this->config->getItem( $key ) : $this->config;
+        return $key ? $this->config->get( $key ) : $this->config;
     }
 
     /**
@@ -136,6 +136,17 @@ class Receiver
     }
 
     /**
+     * Search mails by a determinate string according to imap_search
+     *
+     * @param string $string The string to look for
+     * @return array
+     */
+    public function searchMails($string)
+    {
+        return $this->mailer->searchMails($string);
+    }
+
+    /**
      * Get total number of all emails
      *
      * @return int
@@ -165,6 +176,7 @@ class Receiver
     {
         return $this->mailer->delete($id);
     }
+
     /**
      * Close the connection
      *
