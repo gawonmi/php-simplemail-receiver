@@ -2,6 +2,7 @@
 require_once 'PHPUnit/Autoload.php';
 
 use SimpleMailReceiver\Commons\Mailserver;
+use Symfony\Component\Yaml\Yaml;
 
 class MailServerTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,7 +14,9 @@ class MailServerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $imap_res = imap_open('{imap.gmail.com:993/imap/ssl}INBOX','maviancetest@gmail.com','Mav1234567'); //'username','password'
+        $yaml         = new Yaml();
+        $config = $yaml->parse(file_get_contents('tests/SimpleMailReceiver/test_config.yml'));//tests/SimpleMailReceiver/test_config.yml
+        $imap_res = imap_open('{'.$config['host'].':'.$config['port'].'/imap/ssl}INBOX',$config['username'],$config['password']);
         $this->mailer = new Mailserver($imap_res);
     }
 

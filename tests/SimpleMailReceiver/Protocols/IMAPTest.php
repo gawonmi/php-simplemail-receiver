@@ -6,12 +6,13 @@ use SimpleMailReceiver\Protocols\IMAP;
 use SimpleMailReceiver\Protocols\POP;
 use SimpleMailReceiver\Protocols\ProtocolInterface;
 use SimpleMailReceiver\Commons\Collection;
+use Symfony\Component\Yaml\Yaml;
 
 class IMAPTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var ProtocolInterface
+     * @var Collection
      *
      */
     private $config;
@@ -23,10 +24,11 @@ class IMAPTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-
+        $yaml         = new Yaml();
+        $config = $yaml->parse(file_get_contents('tests/SimpleMailReceiver/test_config.yml'));//tests/SimpleMailReceiver/test_config.yml
         $this->config = new Collection(array(
-            'username' => 'username',
-            'password' => 'password'
+            'username' => $config['username'],
+            'password' => $config['password']
         ));
     }
 
@@ -37,7 +39,7 @@ class IMAPTest extends \PHPUnit_Framework_TestCase
             ->setPort(993)
             ->setFolder('INBOX')
             ->setSsl(true);
-        $this->assertNotNull($this->protocol->connect($this->config->getItem('username'), $this->config->getItem('password')));
+        $this->assertNotNull($this->protocol->connect($this->config->get('username'), $this->config->get('password')));
     }
 
     public function testPOP()
@@ -47,7 +49,7 @@ class IMAPTest extends \PHPUnit_Framework_TestCase
             ->setPort(995)
             ->setFolder('INBOX')
             ->setSsl(true);
-        $this->assertNotNull($this->protocol->connect($this->config->getItem('username'), $this->config->getItem('password')));
+        $this->assertNotNull($this->protocol->connect($this->config->get('username'), $this->config->get('password')));
     }
 
     public function testNNTP()
