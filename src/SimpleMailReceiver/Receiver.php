@@ -82,9 +82,6 @@ class Receiver
                 E_USER_WARNING
             );
         }
-        // init the exception thrower!
-        $excThrower = new ExceptionThrower();
-        $excThrower->start();
 
         $this->setConfig($config ? : new Collection());
         $factory      = new ProtocolFactory();
@@ -119,7 +116,8 @@ class Receiver
             $this->protocol->connect(
                 $this->getConfig('username'),
                 $this->getConfig('password')
-            )
+            ),
+            new ExceptionThrower()
         );
         return true;
     }

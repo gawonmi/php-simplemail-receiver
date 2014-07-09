@@ -19,12 +19,17 @@ class HeaderTest extends \PHPUnit_Framework_TestCase
             'to'      => 'mavianceTest@gmail.com',
             'from'    => 'Jose Luis Cardosa Manzano <jlcardosa@gmail.com>',
             'reply'   => 'Jose Luis Cardosa Manzano <jlcardosa@gmail.com>',
-            'subject' => 'Pruuueba',
+            'subject' => 'EEE',
             'udate'   => '19586575518',
             'unseen'  => 'U',
-            'size'    => '1024'
+            'size'    => '0'
         );
         $this->mailHeader = new Headers($mailHeader);
+        $this->mailHeader->setCc('mavianceTest@gmail.com');
+        $this->mailHeader->setCco('mavianceTest@gmail.com');
+        $this->mailHeader->setSubject('Pruuueba');
+        $this->mailHeader->setDate(new \DateTime('@19586575518'));
+        $this->mailHeader->setSize('1024');
     }
 
     public function testSearchFilename()

@@ -58,6 +58,8 @@ class MailTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->mail->getMailHeader(), $this->mailHeader);
         $this->assertEquals($this->mail->getBody(), $this->mailBody);
         $this->assertEquals($this->mail->getAttachments(), $this->mailAttachments);
+        $this->assertEquals($this->mail->getAttachments()->count(), 3);
+        $this->assertTrue(is_array($this->mail->getAttachments()->getAll()));
     }
 
     public function testSearch()
@@ -80,5 +82,10 @@ class MailTest extends \PHPUnit_Framework_TestCase
                 "attachment" => $this->mailAttachments
             )
         );
+    }
+
+    public function testToString()
+    {
+        $this->assertTrue(is_string($this->mail->__toString()));
     }
 }

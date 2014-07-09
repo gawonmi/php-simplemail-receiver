@@ -35,4 +35,14 @@ class ProtocolFactoryTest extends \PHPUnit_Framework_TestCase
         $this->protocol = new ProtocolFactory();
         $this->assertEquals('SimpleMailReceiver\Protocols\NNTP', get_class($this->protocol->create('nntp')));
     }
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage protocolX is not valid protocol
+     */
+    public function testNoProtocolInFactoryException()
+    {
+        $this->protocol = new ProtocolFactory();
+        $this->protocol->create('protocolX');
+    }
 }

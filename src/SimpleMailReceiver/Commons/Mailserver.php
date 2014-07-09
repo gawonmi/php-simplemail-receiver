@@ -11,6 +11,7 @@ use SimpleMailReceiver\Exceptions\SimpleMailReceiverException;
 use SimpleMailReceiver\Mail\Attachment;
 use SimpleMailReceiver\Mail\Mail;
 use SimpleMailReceiver\Mail\Headers;
+use SimpleMailReceiver\Exceptions\ExceptionThrower;
 
 /**
  * Common class that handle with all the protocols to realize options with the mail server
@@ -32,13 +33,20 @@ class Mailserver
     protected $mailbox;
 
     /**
+     * @var ExceptionThrower
+     */
+    protected $exceptionThrower;
+
+    /**
      * Constructor of the class
      *
      * @param resource $imap_res The resource to use in the imap functions.
+     * @param ExceptionThrower $eT
      */
-    public function __construct($imap_res)
+    public function __construct($imap_res, $eT)
     {
         $this->mailbox = $imap_res;
+        $this->exceptionThrower = $eT;
     }
 
     /**
@@ -48,7 +56,10 @@ class Mailserver
      */
     public function ping()
     {
+        //init the catching
+        $this->exceptionThrower->start();
         return imap_ping($this->mailbox);
+        $this->exceptionThrower->stop();
     }
 
     /**
@@ -94,7 +105,11 @@ class Mailserver
     {
         try
         {
+            //init the catching
+            $this->exceptionThrower->start();
             $mail_header    = imap_header($this->mailbox, $id);
+            $this->exceptionThrower->stop();
+
             if (!is_null($mail_header)) {
                 // more details must be added
                 $data_header = array(
@@ -128,12 +143,14 @@ class Mailserver
     {
         try
         {
+            //init the catching
+            $this->exceptionThrower->start();
             $body = $this->get_part($this->mailbox, $id, "TEXT/HTML");
             // fallback to plain text
             if ($body == "") {
                 $body = $this->get_part($this->mailbox, $id, "TEXT/PLAIN");
             }
-
+            $this->exceptionThrower->stop();
             return $body;
         }catch (\Exception $e)
         {
@@ -154,6 +171,8 @@ class Mailserver
         try
         {
             $attachments = new Collection();
+            //init the catching
+            $this->exceptionThrower->start();
             $structure   = imap_fetchstructure($this->mailbox, $id);
             if(property_exists($structure,'parts'))
             {
@@ -180,6 +199,7 @@ class Mailserver
                         if ($encoding == 5) {
                             $message = $message;
                         }
+                        $this->exceptionThrower->stop();
                         $name_ext = pathinfo($name);
                         $attachment = new Attachment($name_ext[ 'filename' ], $message, $name_ext[ 'extension' ], sizeof($message));
                         $attachments->add($attachment);
@@ -203,7 +223,10 @@ class Mailserver
     {
         try
         {
+            //init the catching
+            $this->exceptionThrower->start();
             $info = imap_mailboxmsginfo($this->mailbox);
+            $this->exceptionThrower->stop();
             return ( property_exists($info,'unread') ? (int) $info->unread : null);
         }catch (\Exception $e)
         {
@@ -222,10 +245,14 @@ class Mailserver
     {
         try
         {
-            return imap_search($this->mailbox, $string);
+            //init the catching
+            $this->exceptionThrower->start();
+            $search = imap_search($this->mailbox, $string);
+            $this->exceptionThrower->stop();
+            return $search;
         }catch (\Exception $e)
         {
-        throw new SimpleMailReceiverException("Error getting the number of unread mails" . $e->getMessage(), $e->getCode());
+            throw new SimpleMailReceiverException("Error in the search" . $e->getMessage(), $e->getCode());
         }
     }
 
@@ -238,7 +265,11 @@ class Mailserver
     public function countAllMails()
     {
         try{
-            return imap_num_msg($this->mailbox);
+            //init the catching
+            $this->exceptionThrower->start();
+            $count = imap_num_msg($this->mailbox);
+            $this->exceptionThrower->stop();
+            return $count;
         }catch (\Exception $e)
         {
             throw new SimpleMailReceiverException("Error getting the number of mails" . $e->getMessage(), $e->getCode());
@@ -257,7 +288,11 @@ class Mailserver
     {
         try
         {
-            return imap_delete($this->mailbox, $id);
+            //init the catching
+            $this->exceptionThrower->start();
+            $success = imap_delete($this->mailbox, $id);
+            $this->exceptionThrower->stop();
+            return $success;
         }catch (\Exception $e)
         {
             throw new SimpleMailReceiverException("Error deleting the mails no ". $id . " ." . $e->getMessage(), $e->getCode());
@@ -274,7 +309,11 @@ class Mailserver
     public function close()
     {
         try{
-            return imap_close($this->mailbox, CL_EXPUNGE);
+            //init the catching
+            $this->exceptionThrower->start();
+            $success = imap_close($this->mailbox, CL_EXPUNGE);
+            $this->exceptionThrower->stop();
+            return $success;
         }catch (\Exception $e)
         {
             throw new SimpleMailReceiverException("Error closing the connection" . $e->getMessage(), $e->getCode());

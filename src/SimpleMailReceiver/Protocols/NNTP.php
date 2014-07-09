@@ -10,8 +10,10 @@ namespace SimpleMailReceiver\Protocols;
 
 
 use SimpleMailReceiver\Commons\AbstractMailTransport;
+use SimpleMailReceiver\Exceptions\SimpleMailReceiverException;
 
-class NNTP extends AbstractMailTransport implements ProtocolInterface{
+class NNTP extends AbstractMailTransport implements ProtocolInterface
+{
 
     /**
      * Create the string for connection and connect to the mail Server

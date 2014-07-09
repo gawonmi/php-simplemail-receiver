@@ -54,7 +54,7 @@ abstract class AbstractMailTransport
      */
     protected $ssl;
 
-    public function __constructor()
+    public function __construct()
     {
         $this->folder = "INBOX";
         $this->ssl = false;
@@ -103,9 +103,6 @@ abstract class AbstractMailTransport
      */
     public function setPort($port)
     {
-        if (!is_numeric($port)) {
-            throw new \InvalidArgumentException("Port must be a number: " . $port);
-        }
         $this->port = $port;
         return $this;
     }
@@ -148,7 +145,7 @@ abstract class AbstractMailTransport
     /**
      * @return boolean
      */
-    public function IsSsl()
+    public function isSsl()
     {
         return $this->ssl;
     }
