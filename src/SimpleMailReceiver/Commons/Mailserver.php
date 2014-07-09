@@ -58,8 +58,9 @@ class Mailserver
     {
         //init the catching
         $this->exceptionThrower->start();
-        return imap_ping($this->mailbox);
+        $success = imap_ping($this->mailbox);
         $this->exceptionThrower->stop();
+        return $success;
     }
 
     /**

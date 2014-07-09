@@ -10,6 +10,7 @@ namespace SimpleMailReceiver\Protocols;
 
 
 use SimpleMailReceiver\Commons\AbstractMailTransport;
+use SimpleMailReceiver\Exceptions\ExceptionThrower;
 use SimpleMailReceiver\Exceptions\SimpleMailReceiverException;
 
 class IMAP extends AbstractMailTransport implements ProtocolInterface
@@ -28,10 +29,11 @@ class IMAP extends AbstractMailTransport implements ProtocolInterface
         try{
             $this->ssl = (($this->ssl == false) ? "/novalidate-cert" : "/ssl");
             $string = "{" . $this->mailserver . ":" . $this->port . "/imap" . $this->ssl ."}" . $this->folder;
-            return imap_open($string, $username, $password);
+            $res = imap_open($string, $username, $password);
+            return $res;
         }catch (\Exception $e)
         {
-            throw new SimpleMailReceiverException("Error trying to set a connection by IMAP! " . $e->getMessage());
+            throw new SimpleMailReceiverException("Error trying to set a connection by IMAP! " . $e->getMessage(), $e->getCode());
         }
     }
 }

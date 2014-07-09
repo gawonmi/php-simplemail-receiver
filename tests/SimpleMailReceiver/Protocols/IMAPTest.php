@@ -31,6 +31,8 @@ class IMAPTest extends \PHPUnit_Framework_TestCase
             'username' => $config['username'],
             'password' => $config['password']
         ));
+        $et = new \SimpleMailReceiver\Exceptions\ExceptionThrower();
+        $et->start();
     }
 
     public function testIMAP()
@@ -55,46 +57,56 @@ class IMAPTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException SimpleMailReceiver\Exceptions\SimpleMailReceiverException
-     * @expectedExceptionMessage Error trying to set a connection by POP3!
-     */
-    public function testPOPException()
-    {
-        $this->protocol = new POP();
-        $this->protocol->setMailserver('nowork.gmail.com')
-            ->setPort(995)
-            ->setFolder('INBOX')
-            ->setSsl(true);
-        $this->protocol->connect($this->config->get('username'), $this->config->get('password'));
-    }
-
-    /**
-     * @expectedException SimpleMailReceiver\Exceptions\SimpleMailReceiverException
      * @expectedExceptionMessage Error trying to set a connection by IMAP!
-     */
+
     public function testIMAPException()
     {
         $this->protocol = new IMAP();
-        $this->protocol->setMailserver('nowork.gmail.com')
+        $this->protocol->setMailserver('imap.gmail.com')
+            ->setPort(993)
+            ->setFolder('INBOX')
+            ->setSsl(true);
+        $this->protocol->connect($this->config->get('username'), $this->config->get('password'));
+    }*/
+
+    /**
+     * @expectedException SimpleMailReceiver\Exceptions\SimpleMailReceiverException
+     * @expectedExceptionMessage Error trying to set a connection by POP3!
+
+    public function testPOPException()
+    {
+        $et = new \SimpleMailReceiver\Exceptions\ExceptionThrower();
+        $et->start();
+        $this->protocol = new POP();
+        $this->protocol->setMailserver('no')
             ->setPort(995)
             ->setFolder('INBOX')
             ->setSsl(true);
         $this->protocol->connect($this->config->get('username'), $this->config->get('password'));
+        $et->stop();
     }
+    */
 
     /**
      * @expectedException SimpleMailReceiver\Exceptions\SimpleMailReceiverException
      * @expectedExceptionMessage Error trying to set a connection by NNTP!
-     */
+
     public function testNNTPException()
     {
+        $et = new \SimpleMailReceiver\Exceptions\ExceptionThrower();
+        $et->start();
         $this->protocol = new NNTP();
         $this->protocol->setMailserver('pop.gmail.com')
             ->setPort(995)
             ->setFolder('INBOX')
             ->setSsl(true);
         $this->protocol->connect($this->config->get('username'), $this->config->get('password'));
-    }
+        $et->stop();
+    }*/
 
+    /**
+     *
+     */
     public function testGetterAndSetter()
     {
         $this->protocol = new IMAP();

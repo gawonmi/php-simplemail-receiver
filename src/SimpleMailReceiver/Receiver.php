@@ -111,14 +111,17 @@ class Receiver
      */
     public function connect()
     {
+        $et = new ExceptionThrower();
+        $et->start();
         //Do the connection
         $this->mailer = new Mailserver(
             $this->protocol->connect(
                 $this->getConfig('username'),
                 $this->getConfig('password')
             ),
-            new ExceptionThrower()
+            $et
         );
+        $et->stop();
         return true;
     }
 
