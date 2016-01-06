@@ -180,7 +180,20 @@ class Mailserver
                 foreach ($structure->parts as $key => $value) {
                     $encoding = $structure->parts[ $key ]->encoding;
                     if ($structure->parts[ $key ]->ifdparameters) {
-                        $name    = $structure->parts[ $key ]->dparameters[ 0 ]->value;
+                        $param_merge = array_merge(
+                            $structure->parts[ $key ]->dparameters,
+                            $structure->parts[ $key ]->parameters
+                        );
+                        foreach ($param_merge as $param) {
+                            if (
+                                $param->attribute == 'FILENAME' ||
+                                $param->attribute == 'NAME'
+                            ) {
+                                $name = $param->value;
+                                break;
+                            }
+                        }
+
                         $message = imap_fetchbody($this->mailbox, $id, $key + 1);
                         if ($encoding == 0) {
                             $message = imap_8bit($message);
@@ -196,9 +209,6 @@ class Mailserver
                         }
                         if ($encoding == 4) {
                             $message = quoted_printable_decode($message);
-                        }
-                        if ($encoding == 5) {
-                            $message = $message;
                         }
                         $this->exceptionThrower->stop();
                         $name_ext = pathinfo($name);
